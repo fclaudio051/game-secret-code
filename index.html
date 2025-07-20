@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo do Código Secreto</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>Jogo do Código Secreto</h1>
+
+  <!-- Configuração -->
+  <div id="config-screen">
+    <h2>Configuração dos Jogadores</h2>
+    <div id="players-list"></div>
+    <button onclick="UI.showAddPlayer()">Adicionar Jogador</button>
+    <button id="startGameBtn" class="hidden" onclick="Game.startGame()">Iniciar Jogo</button>
+    <div id="player-form" class="hidden"></div>
+  </div>
+
+  <!-- Jogo -->
+  <div id="game-screen" class="hidden">
+    <div id="mainArea">
+      <h2 id="turnInfo"></h2>
+      <div id="adversaries"></div>
+      <button onclick="Game.makeAllGuesses()">Confirmar Todos os Palpites</button>
+      <div id="feedback"></div>
+      <div id="codesStatus"></div>
+    </div>
+    <div id="sidebarAttempts" class="hidden">
+      <h3>Tentativas</h3>
+      <div id="legend">
+        <div><span class="attempt-number lower">5</span> = Menor que o número correto</div>
+        <div><span class="attempt-number higher">5</span> = Maior que o número correto</div>
+      </div>
+      <div id="attemptsContent"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/ui.js"></script>
+  <script src="js/players.js"></script>
+  <script src="js/gameLogic.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

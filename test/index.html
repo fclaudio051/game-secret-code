@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo do Código Secreto</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 { font-size: 2.2em; margin: 10px 0; text-shadow: 2px 2px 5px #000; }
+    h2 { margin: 10px 0; }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+      border: none;
+      color: #fff;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover { transform: scale(1.05); box-shadow: 0 0 10px #00c6ff; }
+
+    input, select {
+      padding: 8px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 1em;
+    }
+
+    input[type="number"], input[type="password"] { width: 50px; }
+
+    #config-screen, #game-screen {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      max-width: 1000px;
+      margin: 15px auto;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .hidden {
+      display: none !important;
+      opacity: 0;
+    }
+
+    .player-card {
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 10px;
+    }
+
+    #game-screen {
+      display: flex;
+      gap: 20px;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    #mainArea {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    #sidebarAttempts {
+      width: 260px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+      transition: all 0.5s ease-in-out;
+      opacity: 1;
+    }
+
+    #sidebarAttempts.hidden {
+      opacity: 0;
+      max-height: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .attempts-line { margin: 5px 0; text-align: left; }
+    .attempt-number {
+      display: inline-block;
+      padding: 4px 6px;
+      margin: 2px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .correct { background: green; }
+    .higher { background: red; }
+    .lower { background: blue; }
+
+    #legend div {
+      margin: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9em;
+    }
+
+
+    #turnInfo { font-size: 1.4em; margin-bottom: 15px; }
+    #feedback { font-size: 1em; margin-top: 10px; min-height: 30px; color: yellow; white-space: pre-line; }
+    #codesStatus { margin-top: 10px; }
+
+    .code-card {
+      display: inline-block;
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin: 10px 5px;
+      min-width: 150px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.4);
+    }
+    .code-display { font-size: 1.3em; letter-spacing: 4px; }
+    .score { font-size: 0.85em; color: #ffd700; margin-top: 5px; }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+      #game-screen { flex-direction: column; align-items: center; }
+      #sidebarAttempts {
+        width: 95%;
+        max-height: none;
+        margin-top: 15px;
+      }
+      .code-card { min-width: 120px; font-size: 0.9em; }
+      input[type="number"], input[type="password"] { width: 40px; }
+      button { padding: 8px 10px; font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo do Código Secreto</h1>
+
+  <!-- Configuração -->
+  <div id="config-screen">
+    <h2>Configuração dos Jogadores</h2>
+    <div id="players-list"></div>
+    <button onclick="showAddPlayer()">Adicionar Jogador</button>
+    <button id="startGameBtn" class="hidden" onclick="startGame()">Iniciar Jogo</button>
+    <div id="player-form" class="hidden"></div>
+  </div>
+
+  <!-- Jogo -->
+  <div id="game-screen" class="hidden">
+    <div id="mainArea">
+      <h2 id="turnInfo"></h2>
+      <div id="adversaries"></div>
+      <button onclick="makeAllGuesses()">Confirmar Todos os Palpites</button>
+      <div id="feedback"></div>
+      <div id="codesStatus"></div>
+    </div>
+    <div id="sidebarAttempts" class="hidden">
+      <h3>Tentativas</h3>
+        <div id="legend" style="font-size: 0.85em; margin-bottom: 10px; text-align: left;">
+          <div><span class="attempt-number lower">5</span> = Menor que o número correto</div>
+          <div><span class="attempt-number higher">5</span> = Maior que o número correto</div>
+        </div>
+        <p>Veja as tentativas de cada jogador:</p>
+      <div id="attemptsContent"></div>
+    </div>
+  </div>
+
+  <script>
+    let players = []; 
+    let currentPlayer = 0;
+    let targetExtra = [];
+
+    function showAddPlayer(editIndex = null) {
+      const form = document.getElementById('player-form');
+      form.classList.remove('hidden');
+      form.innerHTML = `
+        <div class="player-card">
+          <h3>${editIndex === null ? 'Adicionar' : 'Editar'} Jogador</h3>
+          <input type="text" id="playerName" placeholder="Nome" maxlength="10"
+            value="${editIndex !== null ? players[editIndex].name : ''}"><br>
+          <label>Cor: </label>
+          <input type="color" id="playerColor" value="${editIndex !== null ? players[editIndex].color : '#'+Math.floor(Math.random()*16777215).toString(16)}"><br>
+          <p>Código (4 números 0-9):</p>
+          ${[0,1,2,3].map(i => `<input type="password" min="0" max="9" maxlength="1" id="d${i}" pattern="[0-9]" placeholder="*">`).join('')}
+          <br>
+          <button onclick="${editIndex === null ? 'addPlayer()' : `updatePlayer(${editIndex})`}">${editIndex === null ? 'Adicionar' : 'Atualizar'}</button>
+          <button onclick="cancelForm()">Cancelar</button>
+        </div>
+      `;
+    }
+
+    function cancelForm() {
+      document.getElementById('player-form').classList.add('hidden');
+      document.getElementById('player-form').innerHTML = '';
+    }
+
+    function addPlayer() {
+      const name = document.getElementById('playerName').value.trim() || `Jogador ${players.length + 1}`;
+      const color = document.getElementById('playerColor').value;
+      let code = [];
+      for (let i = 0; i < 4; i++) {
+        const val = parseInt(document.getElementById(`d${i}`).value);
+        if (isNaN(val) || val < 0 || val > 9) { alert('Código inválido!'); return; }
+        code.push(val);
+      }
+      players.push({ 
+        name, 
+        color, 
+        code, 
+        progress: Array(4).fill(null), 
+        active: true, 
+        score: 0, 
+        errors: 0,
+        attempts: [[], [], [], []]
+      });
+      cancelForm();
+      refreshPlayersList();
+    }
+
+    function editPlayer(index) { showAddPlayer(index); }
+    function updatePlayer(index) {
+      const name = document.getElementById('playerName').value.trim() || `Jogador ${index + 1}`;
+      const color = document.getElementById('playerColor').value;
+      let code = [];
+      for (let i = 0; i < 4; i++) {
+        const val = parseInt(document.getElementById(`d${i}`).value);
+        if (isNaN(val) || val < 0 || val > 9) { alert('Código inválido!'); return; }
+        code.push(val);
+      }
+      players[index] = { ...players[index], name, color, code };
+      cancelForm();
+      refreshPlayersList();
+    }
+    function deletePlayer(index) { players.splice(index, 1); refreshPlayersList(); }
+
+    function refreshPlayersList() {
+      const list = document.getElementById('players-list');
+      list.innerHTML = '';
+      players.forEach((p, i) => {
+        list.innerHTML += `
+          <div class="player-card" style="border-left:5px solid ${p.color}">
+            <strong>${p.name}</strong> - Código: ****
+            <button onclick="editPlayer(${i})">Editar</button>
+            <button onclick="deletePlayer(${i})">Excluir</button>
+          </div>
+        `;
+      });
+      document.getElementById('startGameBtn').classList.toggle('hidden', players.length < 2);
+    }
+
+    function startGame() {
+      document.getElementById('config-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      currentPlayer = 0;
+      targetExtra = [];
+      updateGameScreen();
+    }
+
+    function updateGameScreen() {
+      if (players.filter(p => p.active).length === 1) {
+        declareWinner(players.find(p => p.active).name);
+        return;
+      }
+      while (!players[currentPlayer].active) {
+        currentPlayer = (currentPlayer + 1) % players.length;
+      }
+      document.getElementById('turnInfo').innerText = `Turno de ${players[currentPlayer].name}`;
+      const advDiv = document.getElementById('adversaries');
+      advDiv.innerHTML = '<p>Dê um palpite (0-9) para cada adversário ativo:</p>';
+      for (let i = 0; i < players.length; i++) {
+        if (i !== currentPlayer && players[i].active) {
+          advDiv.innerHTML += `
+            <div>
+              <strong>${players[i].name}:</strong>
+              <input type="number" id="guess_${i}" min="0" max="9" placeholder="0-9" style="width:60px;">
+            </div>
+          `;
+        }
+      }
+      showCodes();
+      showSidebarAttempts();
+      document.getElementById('sidebarAttempts').classList.remove('hidden');
+      document.getElementById('feedback').innerText = '';
+    }
+
+    function showCodes() {
+      const codesDiv = document.getElementById('codesStatus');
+      codesDiv.innerHTML = '';
+      players.forEach((p) => {
+        if (p.active) {
+          let prog = p.progress.map(v => (v === null ? '_' : v)).join(' ');
+          codesDiv.innerHTML += `
+            <div class="code-card" style="background:${p.color}55">
+              <h3>${p.name}</h3>
+              <div class="code-display">${prog}</div>
+              <div class="score">Acertos: ${p.score} | Erros: ${p.errors}</div>
+            </div>
+          `;
+        }
+      });
+    }
+
+    function showSidebarAttempts() {
+      const attemptsContent = document.getElementById('attemptsContent');
+      attemptsContent.innerHTML = '';
+      players.forEach((p) => {
+        if (!p.active) return;
+        let pos = p.progress.indexOf(null);
+        if (pos === -1) return;
+        let line = `<div class="attempts-line"><strong>${p.name}:</strong> `;
+        p.attempts[pos].forEach(num => {
+          let className = '';
+          if (num === p.code[pos]) className = 'correct';
+          else if (num < p.code[pos]) className = 'lower';
+          else className = 'higher';
+          line += `<span class="attempt-number ${className}">${num}</span>`;
+        });
+        line += '</div>';
+        attemptsContent.innerHTML += line;
+      });
+    }
+
+    function makeAllGuesses() {
+      let filled = false;
+      for (let i = 0; i < players.length; i++) {
+        if (i === currentPlayer || !players[i].active) continue;
+        const input = document.getElementById(`guess_${i}`);
+        if (input && input.value !== '') {
+          filled = true;
+          break;
+        }
+      }
+      if (!filled) {
+        alert('⚠️ Você precisa digitar pelo menos um palpite antes de confirmar!');
+        return;
+      }
+
+      let feedbackMsg = '';
+      targetExtra = [];
+      for (let i = 0; i < players.length; i++) {
+        if (i === currentPlayer || !players[i].active) continue;
+        const input = document.getElementById(`guess_${i}`);
+        const guess = parseInt(input.value);
+        if (isNaN(guess) || guess < 0 || guess > 9) {
+          feedbackMsg += `\n${players[i].name}: Palpite inválido.`;
+          players[currentPlayer].errors++;
+          continue;
+        }
+        const targetPlayer = players[i];
+        let nextIndex = targetPlayer.progress.indexOf(null);
+        if (nextIndex === -1) {
+          feedbackMsg += `\n${targetPlayer.name}: Código já descoberto.`;
+        } else {
+          targetPlayer.attempts[nextIndex].push(guess);
+          if (guess === targetPlayer.code[nextIndex]) {
+            targetPlayer.progress[nextIndex] = guess;
+            players[currentPlayer].score++;
+            targetPlayer.attempts[nextIndex] = [];
+            feedbackMsg += `\n${targetPlayer.name}: Acertou o dígito ${nextIndex + 1}!`;
+            if (!targetPlayer.progress.includes(null)) {
+              targetPlayer.active = false;
+              feedbackMsg += `\n${targetPlayer.name} foi eliminado!`;
+            } else {
+              targetExtra.push(i);
+            }
+          } else {
+            players[currentPlayer].errors++;
+            feedbackMsg += `\n${targetPlayer.name}: Errou o dígito ${nextIndex + 1}.`;
+          }
+        }
+        input.value = '';
+      }
+      document.getElementById('feedback').innerText = feedbackMsg.trim();
+      showCodes();
+      showSidebarAttempts();
+
+      // Efeito de reset da barra lateral
+      document.getElementById('sidebarAttempts').classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('sidebarAttempts').classList.remove('hidden');
+      }, 300);
+
+      if (targetExtra.length > 0) {
+        iniciarChancesExtras();
+      } else {
+        nextTurn();
+      }
+    }
+
+    function iniciarChancesExtras() {
+      targetExtra = targetExtra.filter(idx => players[idx].active);
+      if (targetExtra.length === 0) { nextTurn(); return; }
+      const proximo = targetExtra.shift();
+      jogarContraUm(proximo);
+    }
+
+    function jogarContraUm(targetIndex) {
+      const advDiv = document.getElementById('adversaries');
+      advDiv.innerHTML = `
+        <p>Você ganhou outra chance contra ${players[targetIndex].name}:</p>
+        <input type="number" id="extraGuess" min="0" max="9" placeholder="0-9" style="width:60px;">
+        <button onclick="extraGuess(${targetIndex})">Tentar</button>
+      `;
+    }
+
+    function extraGuess(targetIndex) {
+      const input = document.getElementById('extraGuess');
+      const guess = parseInt(input.value);
+      let feedbackMsg = '';
+      if (isNaN(guess) || guess < 0 || guess > 9) {
+        alert('Palpite inválido!');
+        return;
+      }
+      const targetPlayer = players[targetIndex];
+      let nextIndex = targetPlayer.progress.indexOf(null);
+      targetPlayer.attempts[nextIndex].push(guess);
+      if (guess === targetPlayer.code[nextIndex]) {
+        targetPlayer.progress[nextIndex] = guess;
+        players[currentPlayer].score++;
+        targetPlayer.attempts[nextIndex] = [];
+        feedbackMsg = `${targetPlayer.name}: Acertou o dígito ${nextIndex + 1}!`;
+        if (!targetPlayer.progress.includes(null)) {
+          targetPlayer.active = false;
+          feedbackMsg += `\n${targetPlayer.name} foi eliminado!`;
+        } else {
+          document.getElementById('feedback').innerText = feedbackMsg;
+          showCodes();
+          showSidebarAttempts();
+          return setTimeout(() => jogarContraUm(targetIndex), 500);
+        }
+      } else {
+        players[currentPlayer].errors++;
+        feedbackMsg = `${targetPlayer.name}: Errou o dígito ${nextIndex + 1}.`;
+      }
+      document.getElementById('feedback').innerText = feedbackMsg;
+      showCodes();
+      showSidebarAttempts();
+      setTimeout(() => iniciarChancesExtras(), 500);
+    }
+
+    function nextTurn() { currentPlayer = (currentPlayer + 1) % players.length; updateGameScreen(); }
+    function declareWinner(name) { alert(`🎉 ${name} venceu!`); location.reload(); }
+  </script>
+</body>
+</html>

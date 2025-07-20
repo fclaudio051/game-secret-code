@@ -1,0 +1,128 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #141E30, #243B55);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+h1 { font-size: 2.2em; margin: 10px 0; text-shadow: 2px 2px 5px #000; }
+h2 { margin: 10px 0; }
+
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  background: linear-gradient(to right, #0072ff, #00c6ff);
+  border: none;
+  color: #fff;
+  border-radius: 25px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover { transform: scale(1.05); box-shadow: 0 0 10px #00c6ff; }
+
+input, select {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1em;
+}
+
+input[type="number"], input[type="password"] { width: 50px; }
+
+#config-screen, #game-screen {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  max-width: 1000px;
+  margin: 15px auto;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.hidden { display: none !important; opacity: 0; }
+
+.player-card {
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+}
+
+#game-screen {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#mainArea {
+  flex: 1;
+  min-width: 280px;
+}
+
+#sidebarAttempts {
+  width: 260px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 300px;
+  max-height: 600px;
+  overflow-y: auto;
+  transition: all 0.5s ease-in-out;
+  opacity: 1;
+}
+
+#sidebarAttempts.hidden { opacity: 0; max-height: 0; padding: 0; margin: 0; overflow: hidden; }
+
+.attempts-line { margin: 5px 0; text-align: left; }
+.attempt-number {
+  display: inline-block;
+  padding: 4px 6px;
+  margin: 2px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.correct { background: green; }
+.higher { background: red; }
+.lower { background: blue; }
+
+#legend div {
+  margin: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85em;
+}
+
+#turnInfo { font-size: 1.4em; margin-bottom: 15px; }
+#feedback { font-size: 1em; margin-top: 10px; min-height: 30px; color: yellow; white-space: pre-line; }
+#codesStatus { margin-top: 10px; }
+
+.code-card {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 10px 5px;
+  min-width: 150px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.4);
+}
+.code-display { font-size: 1.3em; letter-spacing: 4px; }
+.score { font-size: 0.85em; color: #ffd700; margin-top: 5px; }
+
+@media (max-width: 768px) {
+  #game-screen { flex-direction: column; align-items: center; }
+  #sidebarAttempts { width: 95%; max-height: none; margin-top: 15px; }
+  .code-card { min-width: 120px; font-size: 0.9em; }
+  input[type="number"], input[type="password"] { width: 40px; }
+  button { padding: 8px 10px; font-size: 0.9em; }
+}

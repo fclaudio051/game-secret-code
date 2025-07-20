@@ -160,8 +160,30 @@ const Game = {
     this.updateGameScreen();
   },
 
-  declareWinner(name) {
-    document.getElementById('mainArea').innerHTML = `<h2>🏆 ${name} venceu o jogo! 🏆</h2>`;
-    document.getElementById('sidebarAttempts').classList.add('hidden');
-  }
-};
+ declareWinner(name) {
+  const mainArea = document.getElementById('mainArea');
+  mainArea.innerHTML = `
+    <h2>🏆 ${name} venceu o jogo! 🏆</h2>
+    <button onclick="Game.restartGame()">Novo Jogo</button>
+  `;
+  document.getElementById('sidebarAttempts').classList.add('hidden');
+},
+
+restartGame() {
+  // Resetar dados dos jogadores
+  Players.list.forEach(p => {
+    p.progress = Array(4).fill(null);
+    p.active = true;
+    p.score = 0;
+    p.errors = 0;
+    p.attempts = [[], [], [], []];
+  });
+
+  // Voltar para tela inicial
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('config-screen').classList.remove('hidden');
+
+  // Atualizar lista de jogadores
+  UI.refreshPlayersList();
+},
+}

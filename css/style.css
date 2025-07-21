@@ -1,34 +1,34 @@
-/* === VARIÁVEIS CSS === */
+
 :root {
-  /* Cores */
+
   --cor-fundo-escura: #141E30;
   --cor-fundo-clara: #243B55;
   --cor-texto-principal: #fff;
   --cor-azul-claro: #00c6ff;
   --cor-azul-escuro: #0072ff;
-  --cor-laranja-claro: #ff9800; /* Laranja brilhante */
-  --cor-laranja-escuro: #ff5722; /* Laranja mais escuro/avermelhado */
-  --cor-verde-claro: #8bc34a; /* Verde mais vibrante */
-  --cor-verde-escuro: #4caf50; /* Verde um pouco mais escuro */
-  --cor-amarelo-feedback: #ffeb3b; /* Amarelo mais vibrante para feedback */
-  --cor-ouro: #ffd700; /* Ouro */
-  --cor-vermelho: #ff4d4d; /* Vermelho vibrante */
-  --cor-azul: #4da6ff; /* Azul vibrante */
-  --cor-cinza-transparente: rgba(0,0,0,0.4); /* Cor para elementos transparentes */
+  --cor-laranja-claro: #ff9800; 
+  --cor-laranja-escuro: #ff5722; 
+  --cor-verde-claro: #8bc34a; 
+  --cor-verde-escuro: #4caf50; 
+  --cor-amarelo-feedback: #ffeb3b; 
+  --cor-ouro: #ffd700; 
+  --cor-vermelho: #ff4d4d; 
+  --cor-azul: #4da6ff; 
+  --cor-cinza-transparente: rgba(0,0,0,0.4); 
 
-  /* Sombras */
-  --sombra-texto: 2px 2px 5px rgba(0,0,0,0.8); /* Sombra de texto mais escura */
-  --sombra-caixa-leve: 0 2px 5px rgba(0,0,0,0.4); /* Sombra mais visível */
-  --sombra-caixa-media: 0 4px 10px rgba(0,0,0,0.5); /* Sombra mais visível */
-  --sombra-caixa-vitoria: 0 0 30px rgba(255, 87, 34, 0.9); /* Sombra mais intensa na vitória */
+  
+  --sombra-texto: 2px 2px 5px rgba(0,0,0,0.8); 
+  --sombra-caixa-leve: 0 2px 5px rgba(0,0,0,0.4); 
+  --sombra-caixa-media: 0 4px 10px rgba(0,0,0,0.5); 
+  --sombra-caixa-vitoria: 0 0 30px rgba(255, 87, 34, 0.9); 
 
-  /* Bordas */
+  
   --borda-raio-pequeno: 5px;
   --borda-raio-medio: 10px;
   --borda-raio-grande: 15px;
   --borda-raio-circulo: 25px;
 
-  /* Espaçamentos */
+  
   --espacamento-xs: 3px;
   --espacamento-s: 5px;
   --espacamento-m: 10px;
@@ -37,9 +37,9 @@
   --espacamento-xxl: 40px;
 }
 
-/* === ESTILO GLOBAL === */
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Mais opções de fonte */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   background: linear-gradient(135deg, var(--cor-fundo-escura), var(--cor-fundo-clara));
   color: var(--cor-texto-principal);
   margin: 0;
@@ -49,69 +49,110 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Centraliza verticalmente o conteúdo principal */
+  justify-content: center; 
 }
 
 h1 {
-  font-size: 2.5em; /* Ligeiramente maior */
-  margin: var(--espacamento-l) 0; /* Mais espaçamento */
+  font-size: 2.5em; 
+  margin: var(--espacamento-l) 0; 
   text-shadow: var(--sombra-texto);
 }
 
 h2 {
   margin: var(--espacamento-m) 0;
-  color: var(--cor-azul-claro); /* Dá destaque aos títulos secundários */
+  color: var(--cor-azul-claro); 
 }
+
 
 button {
   padding: var(--espacamento-m) var(--espacamento-l);
   margin: var(--espacamento-s);
-  background: linear-gradient(to right, var(--cor-azul-escuro), var(--cor-azul-claro));
   border: none;
   color: var(--cor-texto-principal);
   border-radius: var(--borda-raio-circulo);
   font-size: 1em;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transição mais suave */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+ 
+  background: var(--cor-fundo-clara); 
+  box-shadow: 0 0 var(--espacamento-s) rgba(0,0,0,0.3);
 }
 
 button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 var(--espacamento-l) var(--cor-azul-claro); /* Sombra maior no hover */
+  
 }
 
-/* Adicionando estado de foco para acessibilidade */
+
 button:focus {
-  outline: 3px solid var(--cor-texto-principal); /* Borda de foco mais espessa */
+  outline: 3px solid var(--cor-texto-principal); 
   outline-offset: 3px;
 }
 
+
+.btn-primary {
+  background: linear-gradient(to right, var(--cor-azul-escuro), var(--cor-azul-claro));
+}
+.btn-primary:hover {
+  box-shadow: 0 0 var(--espacamento-l) var(--cor-azul-claro);
+}
+
+
+.btn-secondary {
+  background: linear-gradient(to right, #6c757d, #adb5bd); 
+  color: #212529;
+}
+.btn-secondary:hover {
+  box-shadow: 0 0 var(--espacamento-l) #adb5bd;
+  transform: scale(1.03); 
+}
+
+
+.btn-danger {
+  background: linear-gradient(to right, #dc3545, #fd7e14); 
+}
+.btn-danger:hover {
+  box-shadow: 0 0 var(--espacamento-l) #dc3545;
+}
+
+
+.btn-extra-guess {
+  background: linear-gradient(to right, var(--cor-laranja-escuro), var(--cor-laranja-claro));
+  padding: var(--espacamento-m) var(--espacamento-xl); 
+  font-size: 1.1em;
+}
+.btn-extra-guess:hover {
+  box-shadow: 0 0 var(--espacamento-l) var(--cor-laranja-claro);
+  transform: scale(1.05);
+}
+
+
 input, select {
-  padding: 10px; /* Um pouco mais de padding */
+  padding: 10px; 
   margin: var(--espacamento-s);
-  border: 1px solid rgba(255,255,255,0.2); /* Borda sutil para inputs */
+  border: 1px solid rgba(255,255,255,0.2); 
   border-radius: var(--borda-raio-pequeno);
   text-align: center;
   font-size: 1em;
-  background-color: rgba(255,255,255,0.1); /* Fundo transparente */
+  background-color: rgba(255,255,255,0.1); 
   color: var(--cor-texto-principal);
 }
 
-/* Adicionando estado de foco para acessibilidade */
+
 input:focus, select:focus {
   outline: 2px solid var(--cor-azul-claro);
   outline-offset: 2px;
-  box-shadow: 0 0 8px var(--cor-azul-claro); /* Sombra no foco */
+  box-shadow: 0 0 8px var(--cor-azul-claro); 
 }
 
 input[type="number"], input[type="password"] {
-  width: 60px; /* Ligeiramente mais largo */
+  width: 60px; 
 }
 
-/* === ÁREA DE CONFIG E JOGO === */
+
 #config-screen, #game-screen {
-  background: rgba(255, 255, 255, 0.08); /* Fundo um pouco mais visível */
-  padding: var(--espacamento-xxl); /* Mais padding */
+  background: rgba(255, 255, 255, 0.08); 
+  padding: var(--espacamento-xxl); 
   border-radius: var(--borda-raio-grande);
   box-shadow: var(--sombra-caixa-media);
   max-width: 1000px;
@@ -122,15 +163,15 @@ input[type="number"], input[type="password"] {
 
 .hidden {
   display: none !important;
-  opacity: 0; /* Para transição de opacidade */
+  opacity: 0; 
 }
 
 .player-card {
-  background: var(--cor-cinza-transparente); /* Usando variável */
+  background: var(--cor-cinza-transparente); 
   padding: var(--espacamento-m);
   margin: var(--espacamento-s) 0;
   border-radius: var(--borda-raio-medio);
-  border: 1px solid rgba(255,255,255,0.1); /* Borda sutil */
+  border: 1px solid rgba(255,255,255,0.1); 
 }
 
 #game-screen {
@@ -147,10 +188,10 @@ input[type="number"], input[type="password"] {
   min-width: 280px;
 }
 
-/* === SIDEBAR === */
+
 #sidebarAttempts {
   width: 260px;
-  background: rgba(0,0,0,0.5); /* Sidebar um pouco mais escura */
+  background: rgba(0,0,0,0.5); 
   border-radius: var(--borda-raio-medio);
   padding: var(--espacamento-m);
   min-height: 300px;
@@ -158,7 +199,7 @@ input[type="number"], input[type="password"] {
   overflow-y: auto;
   transition: all 0.5s ease-in-out;
   opacity: 1;
-  border: 1px solid rgba(255,255,255,0.1); /* Borda sutil */
+  border: 1px solid rgba(255,255,255,0.1); 
 }
 
 #sidebarAttempts.hidden {
@@ -176,13 +217,13 @@ input[type="number"], input[type="password"] {
 
 .attempt-number {
   display: inline-block;
-  padding: 4px 8px; /* Mais padding horizontal */
+  padding: 4px 8px; 
   margin: 2px;
   border-radius: 4px;
   font-weight: bold;
-  font-size: 0.95em; /* Ligeiramente maior */
+  font-size: 0.95em; 
   color: var(--cor-texto-principal);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Pequena sombra para destacas */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
 }
 
 .higher {
@@ -194,26 +235,26 @@ input[type="number"], input[type="password"] {
 }
 
 #legend div {
-  margin: var(--espacamento-s) 0; /* Mais espaçamento */
+  margin: var(--espacamento-s) 0; 
   display: flex;
   align-items: center;
-  gap: 8px; /* Mais espaçamento entre ícone e texto */
-  font-size: 0.9em; /* Ligeiramente maior */
+  gap: 8px; 
+  font-size: 0.9em; 
 }
 
 #turnInfo {
-  font-size: 1.5em; /* Ligeiramente maior */
+  font-size: 1.5em; 
   margin-bottom: var(--espacamento-l);
-  color: var(--cor-ouro); /* Cor de destaque para a informação do turno */
+  color: var(--cor-ouro); 
 }
 
 #feedback {
-  font-size: 1.1em; /* Ligeiramente maior */
-  margin-top: var(--espacamento-l); /* Mais margem */
-  min-height: 40px; /* Altura mínima para evitar "saltos" */
+  font-size: 1.1em; 
+  margin-top: var(--espacamento-l); 
+  min-height: 40px; 
   color: var(--cor-amarelo-feedback);
   white-space: pre-line;
-  font-weight: bold; /* Deixa o feedback mais notável */
+  font-weight: bold; 
 }
 
 #codesStatus {
@@ -225,91 +266,92 @@ input[type="number"], input[type="password"] {
   border-radius: var(--borda-raio-medio);
   padding: var(--espacamento-m) var(--espacamento-l);
   margin: var(--espacamento-m) var(--espacamento-s);
-  min-width: 160px; /* Ligeiramente mais largo */
-  box-shadow: var(--sombra-caixa-media); /* Sombra mais destacada */
+  min-width: 160px; 
+  box-shadow: var(--sombra-caixa-media); 
   background: var(--cor-cinza-transparente);
-  border: 1px solid rgba(255,255,255,0.1); /* Borda sutil */
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .code-display {
-  font-size: 1.4em; /* Ligeiramente maior */
-  letter-spacing: 5px; /* Mais espaçamento entre os números */
+  font-size: 1.4em; 
+  letter-spacing: 5px; 
   font-weight: bold;
 }
 
 .score {
-  font-size: 0.9em; /* Ligeiramente maior */
+  font-size: 0.9em; 
   color: var(--cor-ouro);
   margin-top: var(--espacamento-s);
 }
 
-/* === TELA DE VITÓRIA === */
+
 #end-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.85); 
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Z-index da tela de vitória */
+  z-index: 999; 
   animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 .victory-container {
   text-align: center;
-  /* Gradiente mais vibrante para a vitória */
-  background: linear-gradient(135deg, #ffc107, #ff9800); /* Laranja mais ouro */
+  
+  background: linear-gradient(135deg, #ffc107, #ff9800); 
   padding: var(--espacamento-xxl) var(--espacamento-xl);
   border-radius: var(--borda-raio-grande);
   box-shadow: var(--sombra-caixa-vitoria);
   animation: popIn 0.7s ease forwards;
-  border: 2px solid var(--cor-ouro); /* Borda de ouro para destaque */
+  border: 2px solid var(--cor-ouro); 
 }
 
 .victory-title {
-  font-size: 2.5em; /* Ligeiramente maior */
+  font-size: 2.5em; 
   color: var(--cor-texto-principal);
-  text-shadow: 2px 2px 12px rgba(0,0,0,0.9); /* Sombra mais intensa */
+  text-shadow: 2px 2px 12px rgba(0,0,0,0.9); 
   margin-bottom: var(--espacamento-l);
 }
 
 .victory-text {
-  font-size: 1.3em; /* Ligeiramente maior */
-  margin: var(--espacamento-m) 0 var(--espacamento-xxl); /* Mais espaçamento inferior */
-  color: #fff; /* Garante que seja branco */
+  font-size: 1.3em; 
+  margin: var(--espacamento-m) 0 var(--espacamento-xxl); 
+  color: #fff; 
 }
 
+
 .victory-btn {
-  background: linear-gradient(45deg, #4CAF50, #8BC34A); /* Verde mais vivo */
+  background: linear-gradient(45deg, var(--cor-verde-escuro), var(--cor-verde-claro)); 
   color: var(--cor-texto-principal);
-  font-size: 1.2em; /* Ligeiramente maior */
+  font-size: 1.2em; 
   border-radius: var(--borda-raio-circulo);
-  padding: 15px 30px; /* Mais padding */
+  padding: 15px 30px; 
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .victory-btn:hover {
-  transform: scale(1.08); /* Mais zoom no hover */
-  box-shadow: 0 0 var(--espacamento-xl) var(--cor-verde-claro); /* Sombra maior */
+  transform: scale(1.08); 
+  box-shadow: 0 0 var(--espacamento-xl) var(--cor-verde-claro); 
 }
 
-/* === CANVAS DE CONFETES === */
+
 #confetti-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Garante que o canvas não bloqueie cliques em elementos abaixo */
-  z-index: 10000; /* Z-index MAIOR que o da #end-screen para aparecer na frente */
-  display: none; /* Oculto por padrão, será exibido via JS */
+  pointer-events: none; 
+  z-index: 99999; 
+  display: none; 
 }
 
-/* === ANIMAÇÕES === */
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -320,7 +362,7 @@ input[type="number"], input[type="password"] {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* === RESPONSIVIDADE === */
+
 @media (max-width: 768px) {
   h1 {
     font-size: 2em;
@@ -332,27 +374,27 @@ input[type="number"], input[type="password"] {
   #game-screen {
     flex-direction: column;
     align-items: center;
-    gap: var(--espacamento-l); /* Reduzir um pouco o gap em telas pequenas */
+    gap: var(--espacamento-l); 
   }
 
   #config-screen, #game-screen {
-    padding: var(--espacamento-l); /* Reduzir padding em telas pequenas */
+    padding: var(--espacamento-l); 
   }
 
   #sidebarAttempts {
-    width: 90%; /* Mais largura em telas pequenas */
-    max-height: 400px; /* Definir um max-height para rolagem */
+    width: 90%; 
+    max-height: 400px; 
     margin-top: var(--espacamento-l);
   }
 
   .code-card {
-    min-width: 100px; /* Reduzir ainda mais em telas muito pequenas */
+    min-width: 100px; 
     font-size: 0.8em;
     padding: var(--espacamento-s) var(--espacamento-m);
   }
 
   input[type="number"], input[type="password"] {
-    width: 45px; /* Ajustar largura */
+    width: 45px; 
     padding: 6px;
   }
 
@@ -362,7 +404,7 @@ input[type="number"], input[type="password"] {
   }
 
   .victory-container {
-    padding: var(--espacamento-xl) var(--espacamento-l); /* Reduzir padding em telas pequenas */
+    padding: var(--espacamento-xl) var(--espacamento-l); 
   }
   .victory-title {
     font-size: 1.8em;

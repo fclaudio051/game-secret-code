@@ -15,7 +15,9 @@
     <div id="config-screen">
       <h2>Configuração dos Jogadores</h2>
       <div id="players-list"></div>
-      <button id="addPlayerBtn">Adicionar Jogador</button> <button id="startGameBtn" class="hidden">Iniciar Jogo</button>
+      <button id="addPlayerBtn" class="btn-secondary">Adicionar Jogador</button>
+
+      <button id="startGameBtn" class="hidden btn-primary">Iniciar Jogo</button>
       <div id="player-form" class="hidden"></div>
     </div>
 
@@ -23,7 +25,9 @@
       <div id="mainArea">
         <h2 id="turnInfo"></h2>
         <div id="adversaries"></div>
-        <button id="confirmGuessesBtn">Confirmar Todos os Palpites</button> <div id="feedback"></div>
+
+        <button id="confirmGuessesBtn" class="btn-primary">Confirmar Todos os Palpites</button>
+        <div id="feedback"></div>
         <div id="codesStatus"></div>
       </div>
       <div id="sidebarAttempts" class="hidden">
@@ -36,6 +40,7 @@
       </div>
     </div>
   </main>
+
 
   <canvas id="confetti-canvas"></canvas>
 

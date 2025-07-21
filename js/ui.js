@@ -1,10 +1,12 @@
 const UI = {
+  
   showAddPlayer(editIndex = null) {
     const form = document.getElementById('player-form');
     form.classList.remove('hidden'); 
 
     const player = editIndex !== null ? Players.list[editIndex] : null;
 
+    
     form.innerHTML = '';
 
     const playerCardDiv = document.createElement('div');
@@ -30,6 +32,7 @@ const UI = {
     const colorInput = document.createElement('input');
     colorInput.type = 'color';
     colorInput.id = 'playerColor';
+    
     colorInput.value = player ? player.color : '#' + Math.floor(Math.random() * 16777215).toString(16);
     playerCardDiv.appendChild(colorInput);
     playerCardDiv.appendChild(document.createElement('br'));
@@ -38,6 +41,7 @@ const UI = {
     codeP.textContent = 'Código (4 números 0-9):';
     playerCardDiv.appendChild(codeP);
 
+    
     for (let i = 0; i < 4; i++) {
       const codeInput = document.createElement('input');
       codeInput.type = 'password';
@@ -46,6 +50,7 @@ const UI = {
       codeInput.maxLength = 1;
       codeInput.id = `d${i}`;
       codeInput.placeholder = '*';
+      
       if (player && player.code && player.code[i] !== undefined) {
         codeInput.value = player.code[i];
       }
@@ -54,17 +59,20 @@ const UI = {
     playerCardDiv.appendChild(document.createElement('br'));
 
     const submitButton = document.createElement('button');
-    submitButton.id = 'submitPlayerBtn'; 
+    submitButton.id = 'submitPlayerBtn';
     submitButton.textContent = editIndex === null ? 'Adicionar' : 'Atualizar';
+    submitButton.classList.add('btn-primary'); 
     playerCardDiv.appendChild(submitButton);
 
     const cancelButton = document.createElement('button');
-    cancelButton.id = 'cancelFormBtn'; 
+    cancelButton.id = 'cancelFormBtn';
     cancelButton.textContent = 'Cancelar';
+    cancelButton.classList.add('btn-secondary'); 
     playerCardDiv.appendChild(cancelButton);
 
     form.appendChild(playerCardDiv);
 
+    
     submitButton.addEventListener('click', () => {
       if (editIndex === null) {
         this.addPlayer();
@@ -75,12 +83,13 @@ const UI = {
     cancelButton.addEventListener('click', () => this.cancelForm());
   },
 
+  
   cancelForm() {
     document.getElementById('player-form').classList.add('hidden');
     document.getElementById('player-form').innerHTML = ''; 
   },
 
-
+  
   _getFormData() {
     const name = document.getElementById('playerName').value.trim();
     const color = document.getElementById('playerColor').value;
@@ -96,17 +105,20 @@ const UI = {
     return { name, color, code };
   },
 
+  
   addPlayer() {
     const data = this._getFormData();
     if (data.error) {
       document.getElementById('feedback').innerText = data.error; 
       return;
     }
+    
     Players.addPlayer(data.name || `Jogador ${Players.list.length + 1}`, data.color, data.code);
     this.cancelForm();
     document.getElementById('feedback').innerText = ''; 
   },
 
+  
   updatePlayer(index) {
     const data = this._getFormData();
     if (data.error) {
@@ -115,10 +127,10 @@ const UI = {
     }
     Players.updatePlayer(index, data.name || `Jogador ${index + 1}`, data.color, data.code);
     this.cancelForm();
-    document.getElementById('feedback').innerText = ''; 
+    document.getElementById('feedback').innerText = ''; o
   },
 
-
+  
   refreshPlayersList() {
     const list = document.getElementById('players-list');
     list.innerHTML = ''; 
@@ -137,21 +149,24 @@ const UI = {
 
       const editButton = document.createElement('button');
       editButton.textContent = 'Editar';
+      editButton.classList.add('btn-secondary'); 
       editButton.addEventListener('click', () => this.showAddPlayer(i));
       playerCardDiv.appendChild(editButton);
 
       const deleteButton = document.createElement('button');
       deleteButton.textContent = 'Excluir';
+      deleteButton.classList.add('btn-danger'); 
       deleteButton.addEventListener('click', () => Players.deletePlayer(i));
       playerCardDiv.appendChild(deleteButton);
 
       list.appendChild(playerCardDiv);
     });
 
-
+    
     document.getElementById('startGameBtn').classList.toggle('hidden', Players.list.length < 2);
   },
 
+  
   showCodes() {
     const codesDiv = document.getElementById('codesStatus');
     codesDiv.innerHTML = ''; 
@@ -181,6 +196,7 @@ const UI = {
     });
   },
 
+
   showSidebarAttempts() {
     const attemptsContent = document.getElementById('attemptsContent');
     attemptsContent.innerHTML = ''; 
@@ -198,7 +214,6 @@ const UI = {
       strongName.textContent = `${p.name}: `;
       attemptsLineDiv.appendChild(strongName);
 
-     
       p.attempts[pos].forEach(num => {
         const attemptSpan = document.createElement('span');
         attemptSpan.classList.add('attempt-number');

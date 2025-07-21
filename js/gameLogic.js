@@ -2,24 +2,24 @@ const Game = {
   currentPlayer: 0,
   targetExtra: [], 
 
- 
   startGame() {
     document.getElementById('config-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
     this.currentPlayer = 0; 
-    this.updateGameScreen();
+    this.updateGameScreen(); 
   },
 
  
   updateGameScreen() {
     const activePlayers = Players.list.filter(p => p.active);
 
+   
     if (activePlayers.length === 1) {
       this.declareWinner(activePlayers[0].name);
       return;
     }
 
-
+    
     while (!Players.list[this.currentPlayer] || !Players.list[this.currentPlayer].active) {
       this.currentPlayer = (this.currentPlayer + 1) % Players.list.length;
     }
@@ -33,7 +33,6 @@ const Game = {
     pInstruction.textContent = 'Dê um palpite (0-9) para cada adversário ativo:';
     advDiv.appendChild(pInstruction);
 
-
     Players.list.forEach((player, index) => {
       if (index !== this.currentPlayer && player.active) {
         const div = document.createElement('div');
@@ -45,7 +44,7 @@ const Game = {
         input.min = '0';
         input.max = '9';
         input.placeholder = '0-9';
-        input.style.width = '60px';
+        input.style.width = '60px'; 
 
         div.appendChild(strong);
         div.appendChild(input);
@@ -56,9 +55,10 @@ const Game = {
     UI.showCodes(); 
     UI.showSidebarAttempts(); 
     document.getElementById('sidebarAttempts').classList.remove('hidden'); 
-    document.getElementById('feedback').innerText = ''; 
+    document.getElementById('feedback').innerText = '';
   },
 
+  
   makeAllGuesses() {
     let hasGuess = false;
     let feedbackMessages = []; 
@@ -89,6 +89,7 @@ const Game = {
         msg = `${player.name}: Palpite inválido.`;
         Players.list[this.currentPlayer].errors++; 
       } else {
+        
         msg = this._evaluateSingleGuess(player, index, guess);
       }
       feedbackMessages.push(msg); 
@@ -100,11 +101,10 @@ const Game = {
     UI.showCodes();
     UI.showSidebarAttempts();
 
-
+  
     document.getElementById('sidebarAttempts').classList.add('hidden');
     setTimeout(() => document.getElementById('sidebarAttempts').classList.remove('hidden'), 300);
 
-  
     if (this.targetExtra.length > 0) {
       this.iniciarChancesExtras();
     } else {
@@ -112,38 +112,43 @@ const Game = {
     }
   },
 
-
+ 
   _evaluateSingleGuess(targetPlayer, targetIndex, guess) {
     let msg = '';
     let nextIndex = targetPlayer.progress.indexOf(null); 
-
     if (nextIndex === -1) {
       return `${targetPlayer.name}: Código já descoberto.`; 
     }
 
-    targetPlayer.attempts[nextIndex].push(guess);
+    targetPlayer.attempts[nextIndex].push(guess); 
 
     if (guess === targetPlayer.code[nextIndex]) {
-      targetPlayer.progress[nextIndex] = guess;
+      
+      targetPlayer.progress[nextIndex] = guess; 
       Players.list[this.currentPlayer].score++; 
       targetPlayer.attempts[nextIndex] = []; 
 
       msg = `${targetPlayer.name}: Acertou o dígito ${nextIndex + 1}!`;
 
       if (!targetPlayer.progress.includes(null)) {
+        
         targetPlayer.active = false;
         msg += `\n${targetPlayer.name} foi eliminado!`;
       } else {
+        
         this.targetExtra.push(targetIndex);
       }
     } else {
+      
       Players.list[this.currentPlayer].errors++; 
       msg = `${targetPlayer.name}: Errou o dígito ${nextIndex + 1}.`;
     }
     return msg;
   },
 
+  
   iniciarChancesExtras() {
+    
     this.targetExtra = this.targetExtra.filter(idx => Players.list[idx].active);
     if (this.targetExtra.length === 0) {
       this.nextTurn(); 
@@ -153,6 +158,7 @@ const Game = {
     this.jogarContraUm(proximoAlvoIndex);
   },
 
+  
   jogarContraUm(targetIndex) {
     const advDiv = document.getElementById('adversaries');
     advDiv.innerHTML = ''; 
@@ -172,10 +178,12 @@ const Game = {
 
     const tryButton = document.createElement('button');
     tryButton.textContent = 'Tentar';
+    tryButton.classList.add('btn-extra-guess'); 
     tryButton.addEventListener('click', () => this.extraGuess(targetIndex)); 
     advDiv.appendChild(tryButton);
   },
 
+ 
   extraGuess(targetIndex) {
     const input = document.getElementById('extraGuess');
     const guess = parseInt(input.value);
@@ -186,12 +194,13 @@ const Game = {
     }
 
     const targetPlayer = Players.list[targetIndex];
-    let msg = this._evaluateSingleGuess(targetPlayer, targetIndex, guess); 
+    let msg = this._evaluateSingleGuess(targetPlayer, targetIndex, guess);
 
     document.getElementById('feedback').innerText = msg;
     UI.showCodes();
     UI.showSidebarAttempts();
 
+   
     if (this.targetExtra.length > 0) {
       this.iniciarChancesExtras();
     } else {
@@ -199,12 +208,13 @@ const Game = {
     }
   },
 
+  
   nextTurn() {
     this.currentPlayer = (this.currentPlayer + 1) % Players.list.length;
     this.updateGameScreen();
   },
 
- 
+  
   declareWinner(name) {
     document.getElementById('game-screen').classList.add('hidden');
 
@@ -226,9 +236,9 @@ const Game = {
 
     const newGameBtn = document.createElement('button');
     newGameBtn.id = 'newGameBtn';
-    newGameBtn.classList.add('victory-btn');
+    newGameBtn.classList.add('victory-btn'); 
     newGameBtn.textContent = 'Novo Jogo';
-
+   
     newGameBtn.addEventListener('click', () => {
       document.body.removeChild(endScreen);
       Game.restartGame();
@@ -238,14 +248,15 @@ const Game = {
     endScreen.appendChild(victoryContainer);
     document.body.appendChild(endScreen);
 
+   
     if (typeof startConfettiAnimation === 'function') {
         startConfettiAnimation();
     } else {
         console.warn("startConfettiAnimation function not found. Ensure confetti.js is loaded and working.");
     }
-
   },
 
+  
   restartGame() {
     Players.list.forEach(p => {
       p.progress = Array(4).fill(null);
@@ -260,6 +271,7 @@ const Game = {
 
     UI.refreshPlayersList(); 
 
+   
     if (typeof stopConfettiAnimation === 'function') {
         stopConfettiAnimation();
     } else {

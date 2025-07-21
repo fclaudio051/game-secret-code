@@ -1,12 +1,21 @@
 
+
 let particles = [];
 let animationFrameId = null;
-const MAX_PARTICLES = 200; 
-const MIN_PARTICLES_TO_REGENERATE = 50; 
-const PARTICLE_REGENERATION_AMOUNT = 100; 
+const MAX_PARTICLES = 300; 
+const MIN_PARTICLES_TO_REGENERATE = 100; 
+const PARTICLE_REGENERATION_AMOUNT = 150; 
 
 
-const colors = ['#FFD700', '#FF4500', '#32CD32', '#1E90FF', '#FF69B4', '#ADFF2F', '#FF00FF'];
+const colors = [
+  '#FF007F', 
+  '#00FFFF', 
+  '#FFFF00', 
+  '#FF4500', 
+  '#39FF14', 
+  '#FFD700', 
+  '#8A2BE2'  
+];
 
 class ConfettiParticle {
   constructor(x, y, radius, color, velocity) {
@@ -15,11 +24,11 @@ class ConfettiParticle {
     this.radius = radius;
     this.color = color;
     this.velocity = velocity;
-    this.alpha = 1;
-    this.gravity = 0.05;
-    this.friction = 0.98;
+    this.alpha = 1; 
+    this.gravity = 0.05; 
+    this.friction = 0.97; 
     this.rotation = Math.random() * 360;
-    this.rotationSpeed = Math.random() * 6 - 3;
+    this.rotationSpeed = Math.random() * 8 - 4; 
   }
 
   draw(ctx) {
@@ -28,17 +37,28 @@ class ConfettiParticle {
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.globalAlpha = this.alpha;
     ctx.fillStyle = this.color;
-    ctx.fillRect(-this.radius / 2, -this.radius / 2, this.radius, this.radius);
+
+    ctx.shadowBlur = 8; 
+    ctx.shadowColor = this.color; 
+
+    const width = this.radius * 1.5; 
+    const height = this.radius * 0.8; 
+    ctx.fillRect(-width / 2, -height / 2, width, height);
+    
+    
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
+
     ctx.restore();
   }
 
   update(canvasHeight) {
     this.velocity.y += this.gravity;
     this.velocity.x *= this.friction;
-    this.velocity.y *= this.friction;
+    this.velocity.y *= this.friction; 
     this.x += this.velocity.x;
     this.y += this.velocity.y;
-    this.alpha -= 0.005; 
+    this.alpha -= 0.003; 
     this.rotation += this.rotationSpeed;
   }
 }
@@ -46,31 +66,28 @@ class ConfettiParticle {
 
 function generateMoreParticles(canvas, amount) {
   for (let i = 0; i < amount; i++) {
-    if (particles.length >= MAX_PARTICLES) break; 
+    if (particles.length >= MAX_PARTICLES) break;
 
     const x = Math.random() * canvas.width;
-
-    const y = -Math.random() * canvas.height * 0.1; 
-    const radius = Math.random() * 4 + 6;
+    const y = -Math.random() * canvas.height * 0.15; 
+    const radius = Math.random() * 5 + 7; 
     const color = colors[Math.floor(Math.random() * colors.length)];
-    const velocity = { x: (Math.random() - 0.5) * 4, y: Math.random() * 4 + 4 };
+    const velocity = { x: (Math.random() - 0.5) * 5, y: Math.random() * 5 + 5 }; 
     particles.push(new ConfettiParticle(x, y, radius, color, velocity));
   }
 }
 
-
 function animateConfetti() {
   const canvas = document.getElementById('confetti-canvas');
   if (!canvas) {
-  
-    stopConfettiAnimation();
+    stopConfettiAnimation(); 
     return;
   }
 
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
-
+ 
   if (particles.length < MIN_PARTICLES_TO_REGENERATE) {
     generateMoreParticles(canvas, PARTICLE_REGENERATION_AMOUNT);
   }
@@ -80,13 +97,12 @@ function animateConfetti() {
     particle.update(canvas.height);
     particle.draw(ctx);
 
-  
-    if (particle.alpha <= 0.05 || particle.y > canvas.height + 50 || particle.x < -50 || particle.x > canvas.width + 50) {
+    
+    if (particle.alpha <= 0.02 || particle.y > canvas.height + 60 || particle.x < -60 || particle.x > canvas.width + 60) {
       particles.splice(i, 1);
     }
   }
 
-  
   animationFrameId = requestAnimationFrame(animateConfetti);
 }
 
@@ -97,52 +113,40 @@ function startConfettiAnimation() {
     return;
   }
 
-
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
- 
   canvas.style.display = 'block';
 
-  
-  if (animationFrameId) return;
-
+  if (animationFrameId) return; 
 
   particles = []; 
   generateMoreParticles(canvas, MAX_PARTICLES); 
 
- 
   animateConfetti();
 }
 
 function stopConfettiAnimation() {
   if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId); 
+    cancelAnimationFrame(animationFrameId);
     animationFrameId = null;
   }
-  particles = []; 
+  particles = [];
   const canvas = document.getElementById('confetti-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     canvas.style.display = 'none';
   }
 }
 
-
 window.startConfettiAnimation = startConfettiAnimation;
 window.stopConfettiAnimation = stopConfettiAnimation;
 
-
 window.addEventListener('resize', () => {
     const canvas = document.getElementById('confetti-canvas');
-    
     if (canvas && animationFrameId) {
-        const oldWidth = canvas.width;
-        const oldHeight = canvas.height;
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        
         
     }
 });

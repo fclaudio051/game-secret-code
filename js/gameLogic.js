@@ -1,53 +1,69 @@
 const Game = {
   currentPlayer: 0,
-  targetExtra: [],
+  targetExtra: [], 
 
+ 
   startGame() {
     document.getElementById('config-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
-    this.currentPlayer = 0;
+    this.currentPlayer = 0; 
     this.updateGameScreen();
   },
 
+ 
   updateGameScreen() {
-    // Verificar se temos apenas um jogador ativo (vencedor)
     const activePlayers = Players.list.filter(p => p.active);
+
     if (activePlayers.length === 1) {
       this.declareWinner(activePlayers[0].name);
       return;
     }
 
-    // Pular jogadores inativos
-    while (!Players.list[this.currentPlayer].active) {
+
+    while (!Players.list[this.currentPlayer] || !Players.list[this.currentPlayer].active) {
       this.currentPlayer = (this.currentPlayer + 1) % Players.list.length;
     }
 
-    // Atualizar informações de turno
     document.getElementById('turnInfo').innerText = `Turno de ${Players.list[this.currentPlayer].name}`;
-    
-    // Gerar campos de palpites para adversários
+
     const advDiv = document.getElementById('adversaries');
-    advDiv.innerHTML = '<p>Dê um palpite (0-9) para cada adversário ativo:</p>';
+    advDiv.innerHTML = ''; 
+
+    const pInstruction = document.createElement('p');
+    pInstruction.textContent = 'Dê um palpite (0-9) para cada adversário ativo:';
+    advDiv.appendChild(pInstruction);
+
+
     Players.list.forEach((player, index) => {
       if (index !== this.currentPlayer && player.active) {
-        advDiv.innerHTML += `
-          <div>
-            <strong>${player.name}:</strong>
-            <input type="number" id="guess_${index}" min="0" max="9" placeholder="0-9" style="width:60px;">
-          </div>
-        `;
+        const div = document.createElement('div');
+        const strong = document.createElement('strong');
+        strong.textContent = `${player.name}:`;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = `guess_${index}`;
+        input.min = '0';
+        input.max = '9';
+        input.placeholder = '0-9';
+        input.style.width = '60px';
+
+        div.appendChild(strong);
+        div.appendChild(input);
+        advDiv.appendChild(div);
       }
     });
 
-    UI.showCodes();
-    UI.showSidebarAttempts();
-    document.getElementById('sidebarAttempts').classList.remove('hidden');
-    document.getElementById('feedback').innerText = '';
+    UI.showCodes(); 
+    UI.showSidebarAttempts(); 
+    document.getElementById('sidebarAttempts').classList.remove('hidden'); 
+    document.getElementById('feedback').innerText = ''; 
   },
 
   makeAllGuesses() {
-    // Verificar se pelo menos um palpite foi dado
     let hasGuess = false;
+    let feedbackMessages = []; 
+
+    
     Players.list.forEach((player, index) => {
       if (index !== this.currentPlayer && player.active) {
         const input = document.getElementById(`guess_${index}`);
@@ -56,39 +72,39 @@ const Game = {
     });
 
     if (!hasGuess) {
-      alert('⚠️ Você precisa digitar pelo menos um palpite antes de confirmar!');
+      document.getElementById('feedback').innerText = '⚠️ Você precisa digitar pelo menos um palpite antes de confirmar!';
       return;
     }
 
-    let feedbackMsg = '';
-    this.targetExtra = [];
+    this.targetExtra = []; 
 
-    // Avaliar palpites
     Players.list.forEach((player, index) => {
-      if (index === this.currentPlayer || !player.active) return;
+      if (index === this.currentPlayer || !player.active) return; 
 
       const input = document.getElementById(`guess_${index}`);
       const guess = parseInt(input.value);
 
+      let msg = '';
       if (isNaN(guess) || guess < 0 || guess > 9) {
-        feedbackMsg += `\n${player.name}: Palpite inválido.`;
-        Players.list[this.currentPlayer].errors++;
+        msg = `${player.name}: Palpite inválido.`;
+        Players.list[this.currentPlayer].errors++; 
       } else {
-        this.evaluateGuess(player, index, guess, feedbackMsg);
+        msg = this._evaluateSingleGuess(player, index, guess);
       }
+      feedbackMessages.push(msg); 
 
-      if (input) input.value = '';
+      if (input) input.value = ''; 
     });
 
-    document.getElementById('feedback').innerText = feedbackMsg.trim();
+    document.getElementById('feedback').innerText = feedbackMessages.filter(Boolean).join('\n'); 
     UI.showCodes();
     UI.showSidebarAttempts();
 
-    // Efeito de animação na barra lateral
+
     document.getElementById('sidebarAttempts').classList.add('hidden');
     setTimeout(() => document.getElementById('sidebarAttempts').classList.remove('hidden'), 300);
 
-    // Próxima jogada
+  
     if (this.targetExtra.length > 0) {
       this.iniciarChancesExtras();
     } else {
@@ -96,51 +112,68 @@ const Game = {
     }
   },
 
-  evaluateGuess(targetPlayer, index, guess, feedbackMsg) {
-    let nextIndex = targetPlayer.progress.indexOf(null);
+
+  _evaluateSingleGuess(targetPlayer, targetIndex, guess) {
+    let msg = '';
+    let nextIndex = targetPlayer.progress.indexOf(null); 
 
     if (nextIndex === -1) {
-      feedbackMsg += `\n${targetPlayer.name}: Código já descoberto.`;
-      return;
+      return `${targetPlayer.name}: Código já descoberto.`; 
     }
 
     targetPlayer.attempts[nextIndex].push(guess);
 
     if (guess === targetPlayer.code[nextIndex]) {
       targetPlayer.progress[nextIndex] = guess;
-      Players.list[this.currentPlayer].score++;
-      targetPlayer.attempts[nextIndex] = [];
-      feedbackMsg += `\n${targetPlayer.name}: Acertou o dígito ${nextIndex + 1}!`;
+      Players.list[this.currentPlayer].score++; 
+      targetPlayer.attempts[nextIndex] = []; 
+
+      msg = `${targetPlayer.name}: Acertou o dígito ${nextIndex + 1}!`;
 
       if (!targetPlayer.progress.includes(null)) {
         targetPlayer.active = false;
-        feedbackMsg += `\n${targetPlayer.name} foi eliminado!`;
+        msg += `\n${targetPlayer.name} foi eliminado!`;
       } else {
-        this.targetExtra.push(index);
+        this.targetExtra.push(targetIndex);
       }
     } else {
-      Players.list[this.currentPlayer].errors++;
-      feedbackMsg += `\n${targetPlayer.name}: Errou o dígito ${nextIndex + 1}.`;
+      Players.list[this.currentPlayer].errors++; 
+      msg = `${targetPlayer.name}: Errou o dígito ${nextIndex + 1}.`;
     }
+    return msg;
   },
 
   iniciarChancesExtras() {
     this.targetExtra = this.targetExtra.filter(idx => Players.list[idx].active);
     if (this.targetExtra.length === 0) {
-      this.nextTurn();
+      this.nextTurn(); 
       return;
     }
-    const proximo = this.targetExtra.shift();
-    this.jogarContraUm(proximo);
+    const proximoAlvoIndex = this.targetExtra.shift(); 
+    this.jogarContraUm(proximoAlvoIndex);
   },
 
   jogarContraUm(targetIndex) {
     const advDiv = document.getElementById('adversaries');
-    advDiv.innerHTML = `
-      <p>Você ganhou outra chance contra ${Players.list[targetIndex].name}:</p>
-      <input type="number" id="extraGuess" min="0" max="9" placeholder="0-9" style="width:60px;">
-      <button onclick="Game.extraGuess(${targetIndex})">Tentar</button>
-    `;
+    advDiv.innerHTML = ''; 
+
+    const pInstruction = document.createElement('p');
+    pInstruction.textContent = `Você ganhou outra chance contra ${Players.list[targetIndex].name}:`;
+    advDiv.appendChild(pInstruction);
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = 'extraGuess';
+    input.min = '0';
+    input.max = '9';
+    input.placeholder = '0-9';
+    input.style.width = '60px';
+    advDiv.appendChild(input);
+
+    const tryButton = document.createElement('button');
+    tryButton.textContent = 'Tentar';
+    tryButton.addEventListener('click', () => this.extraGuess(targetIndex)); 
+    advDiv.appendChild(tryButton);
   },
 
   extraGuess(targetIndex) {
@@ -148,31 +181,12 @@ const Game = {
     const guess = parseInt(input.value);
 
     if (isNaN(guess) || guess < 0 || guess > 9) {
-      alert('Palpite inválido!');
+      document.getElementById('feedback').innerText = 'Palpite inválido! Digite um número entre 0 e 9.';
       return;
     }
 
     const targetPlayer = Players.list[targetIndex];
-    let nextIndex = targetPlayer.progress.indexOf(null);
-    let msg = '';
-
-    if (guess === targetPlayer.code[nextIndex]) {
-      targetPlayer.progress[nextIndex] = guess;
-      Players.list[this.currentPlayer].score++;
-      targetPlayer.attempts[nextIndex] = [];
-      msg += `Acertou o dígito ${nextIndex + 1} de ${targetPlayer.name}!`;
-
-      if (!targetPlayer.progress.includes(null)) {
-        targetPlayer.active = false;
-        msg += `\n${targetPlayer.name} foi eliminado!`;
-      } else {
-        this.targetExtra.unshift(targetIndex);
-      }
-    } else {
-      Players.list[this.currentPlayer].errors++;
-      targetPlayer.attempts[nextIndex].push(guess);
-      msg += `Errou o dígito ${nextIndex + 1} de ${targetPlayer.name}.`;
-    }
+    let msg = this._evaluateSingleGuess(targetPlayer, targetIndex, guess); 
 
     document.getElementById('feedback').innerText = msg;
     UI.showCodes();
@@ -190,45 +204,66 @@ const Game = {
     this.updateGameScreen();
   },
 
+ 
   declareWinner(name) {
-  // Oculta área principal do jogo
-  document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.add('hidden');
 
-  // Mostra a tela de fim de jogo
-  const endScreen = document.createElement('div');
-  endScreen.id = 'end-screen';
-  endScreen.innerHTML = `
-    <h2>🏆 ${name} venceu o jogo! 🏆</h2>
-    <button id="newGameBtn">Novo Jogo</button>
-  `;
-  document.body.appendChild(endScreen);
+    const endScreen = document.createElement('div');
+    endScreen.id = 'end-screen';
 
-  document.getElementById('sidebarAttempts').classList.add('hidden');
+    const victoryContainer = document.createElement('div');
+    victoryContainer.classList.add('victory-container');
 
-  // Evento do botão "Novo Jogo"
-  document.getElementById('newGameBtn').onclick = () => {
-    document.body.removeChild(endScreen);
-    Game.restartGame();
-  };
-},
+    const victoryTitle = document.createElement('h2');
+    victoryTitle.classList.add('victory-title');
+    victoryTitle.textContent = `🏆 ${name} venceu o jogo! 🏆`;
+    victoryContainer.appendChild(victoryTitle);
 
+    const victoryText = document.createElement('p');
+    victoryText.classList.add('victory-text');
+    victoryText.textContent = 'Parabéns! Você dominou todos os códigos.';
+    victoryContainer.appendChild(victoryText);
+
+    const newGameBtn = document.createElement('button');
+    newGameBtn.id = 'newGameBtn';
+    newGameBtn.classList.add('victory-btn');
+    newGameBtn.textContent = 'Novo Jogo';
+
+    newGameBtn.addEventListener('click', () => {
+      document.body.removeChild(endScreen);
+      Game.restartGame();
+    });
+    victoryContainer.appendChild(newGameBtn);
+
+    endScreen.appendChild(victoryContainer);
+    document.body.appendChild(endScreen);
+
+    if (typeof startConfettiAnimation === 'function') {
+        startConfettiAnimation();
+    } else {
+        console.warn("startConfettiAnimation function not found. Ensure confetti.js is loaded and working.");
+    }
+
+  },
 
   restartGame() {
-  // Resetar dados dos jogadores
-  Players.list.forEach(p => {
-    p.progress = Array(4).fill(null);
-    p.active = true;
-    p.score = 0;
-    p.errors = 0;
-    p.attempts = [[], [], [], []];
-  });
+    Players.list.forEach(p => {
+      p.progress = Array(4).fill(null);
+      p.active = true;
+      p.score = 0;
+      p.errors = 0;
+      p.attempts = [[], [], [], []];
+    });
 
-  // Mostrar tela de configuração para iniciar novo jogo
-  document.getElementById('game-screen').classList.add('hidden');
-  document.getElementById('config-screen').classList.remove('hidden');
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('config-screen').classList.remove('hidden');
 
-  // Atualizar lista de jogadores
-  UI.refreshPlayersList();
-},
+    UI.refreshPlayersList(); 
 
+    if (typeof stopConfettiAnimation === 'function') {
+        stopConfettiAnimation();
+    } else {
+        console.warn("stopConfettiAnimation function not found. Ensure confetti.js is loaded and working.");
+    }
+  }
 };

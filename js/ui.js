@@ -1,104 +1,218 @@
 const UI = {
   showAddPlayer(editIndex = null) {
     const form = document.getElementById('player-form');
-    form.classList.remove('hidden');
+    form.classList.remove('hidden'); 
+
     const player = editIndex !== null ? Players.list[editIndex] : null;
-    form.innerHTML = `
-      <div class="player-card">
-        <h3>${editIndex === null ? 'Adicionar' : 'Editar'} Jogador</h3>
-        <input type="text" id="playerName" placeholder="Nome" maxlength="10"
-          value="${player ? player.name : ''}"><br>
-        <label>Cor: </label>
-        <input type="color" id="playerColor" value="${player ? player.color : '#'+Math.floor(Math.random()*16777215).toString(16)}"><br>
-        <p>Código (4 números 0-9):</p>
-        ${[0,1,2,3].map(i => `<input type="password" min="0" max="9" maxlength="1" id="d${i}" placeholder="*">`).join('')}
-        <br>
-        <button onclick="${editIndex === null ? 'UI.addPlayer()' : `UI.updatePlayer(${editIndex})`}">${editIndex === null ? 'Adicionar' : 'Atualizar'}</button>
-        <button onclick="UI.cancelForm()">Cancelar</button>
-      </div>
-    `;
+
+    form.innerHTML = '';
+
+    const playerCardDiv = document.createElement('div');
+    playerCardDiv.classList.add('player-card');
+
+    const h3 = document.createElement('h3');
+    h3.textContent = `${editIndex === null ? 'Adicionar' : 'Editar'} Jogador`;
+    playerCardDiv.appendChild(h3);
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.id = 'playerName';
+    nameInput.placeholder = 'Nome';
+    nameInput.maxLength = 10;
+    nameInput.value = player ? player.name : '';
+    playerCardDiv.appendChild(nameInput);
+    playerCardDiv.appendChild(document.createElement('br'));
+
+    const colorLabel = document.createElement('label');
+    colorLabel.textContent = 'Cor: ';
+    playerCardDiv.appendChild(colorLabel);
+
+    const colorInput = document.createElement('input');
+    colorInput.type = 'color';
+    colorInput.id = 'playerColor';
+    colorInput.value = player ? player.color : '#' + Math.floor(Math.random() * 16777215).toString(16);
+    playerCardDiv.appendChild(colorInput);
+    playerCardDiv.appendChild(document.createElement('br'));
+
+    const codeP = document.createElement('p');
+    codeP.textContent = 'Código (4 números 0-9):';
+    playerCardDiv.appendChild(codeP);
+
+    for (let i = 0; i < 4; i++) {
+      const codeInput = document.createElement('input');
+      codeInput.type = 'password';
+      codeInput.min = '0';
+      codeInput.max = '9';
+      codeInput.maxLength = 1;
+      codeInput.id = `d${i}`;
+      codeInput.placeholder = '*';
+      if (player && player.code && player.code[i] !== undefined) {
+        codeInput.value = player.code[i];
+      }
+      playerCardDiv.appendChild(codeInput);
+    }
+    playerCardDiv.appendChild(document.createElement('br'));
+
+    const submitButton = document.createElement('button');
+    submitButton.id = 'submitPlayerBtn'; 
+    submitButton.textContent = editIndex === null ? 'Adicionar' : 'Atualizar';
+    playerCardDiv.appendChild(submitButton);
+
+    const cancelButton = document.createElement('button');
+    cancelButton.id = 'cancelFormBtn'; 
+    cancelButton.textContent = 'Cancelar';
+    playerCardDiv.appendChild(cancelButton);
+
+    form.appendChild(playerCardDiv);
+
+    submitButton.addEventListener('click', () => {
+      if (editIndex === null) {
+        this.addPlayer();
+      } else {
+        this.updatePlayer(editIndex);
+      }
+    });
+    cancelButton.addEventListener('click', () => this.cancelForm());
   },
 
   cancelForm() {
     document.getElementById('player-form').classList.add('hidden');
-    document.getElementById('player-form').innerHTML = '';
+    document.getElementById('player-form').innerHTML = ''; 
+  },
+
+
+  _getFormData() {
+    const name = document.getElementById('playerName').value.trim();
+    const color = document.getElementById('playerColor').value;
+    let code = [];
+    for (let i = 0; i < 4; i++) {
+      const input = document.getElementById(`d${i}`);
+      const val = parseInt(input.value);
+      if (isNaN(val) || val < 0 || val > 9) {
+        return { error: 'Código inválido! Digite 4 números entre 0 e 9.' };
+      }
+      code.push(val);
+    }
+    return { name, color, code };
   },
 
   addPlayer() {
-    const name = document.getElementById('playerName').value.trim() || `Jogador ${Players.list.length + 1}`;
-    const color = document.getElementById('playerColor').value;
-    let code = [];
-    for (let i = 0; i < 4; i++) {
-      const val = parseInt(document.getElementById(`d${i}`).value);
-      if (isNaN(val) || val < 0 || val > 9) { alert('Código inválido!'); return; }
-      code.push(val);
+    const data = this._getFormData();
+    if (data.error) {
+      document.getElementById('feedback').innerText = data.error; 
+      return;
     }
-    Players.addPlayer(name, color, code);
+    Players.addPlayer(data.name || `Jogador ${Players.list.length + 1}`, data.color, data.code);
     this.cancelForm();
+    document.getElementById('feedback').innerText = ''; 
   },
 
   updatePlayer(index) {
-    const name = document.getElementById('playerName').value.trim() || `Jogador ${index + 1}`;
-    const color = document.getElementById('playerColor').value;
-    let code = [];
-    for (let i = 0; i < 4; i++) {
-      const val = parseInt(document.getElementById(`d${i}`).value);
-      if (isNaN(val) || val < 0 || val > 9) { alert('Código inválido!'); return; }
-      code.push(val);
+    const data = this._getFormData();
+    if (data.error) {
+      document.getElementById('feedback').innerText = data.error; 
+      return;
     }
-    Players.updatePlayer(index, name, color, code);
+    Players.updatePlayer(index, data.name || `Jogador ${index + 1}`, data.color, data.code);
     this.cancelForm();
+    document.getElementById('feedback').innerText = ''; 
   },
+
 
   refreshPlayersList() {
     const list = document.getElementById('players-list');
-    list.innerHTML = '';
+    list.innerHTML = ''; 
+
     Players.list.forEach((p, i) => {
-      list.innerHTML += `
-        <div class="player-card" style="border-left:5px solid ${p.color}">
-          <strong>${p.name}</strong> - Código: ****
-          <button onclick="UI.showAddPlayer(${i})">Editar</button>
-          <button onclick="Players.deletePlayer(${i})">Excluir</button>
-        </div>
-      `;
+      const playerCardDiv = document.createElement('div');
+      playerCardDiv.classList.add('player-card');
+      playerCardDiv.style.borderLeft = `5px solid ${p.color}`;
+
+      const strongName = document.createElement('strong');
+      strongName.textContent = p.name;
+      playerCardDiv.appendChild(strongName);
+
+      const codeText = document.createTextNode(' - Código: **** ');
+      playerCardDiv.appendChild(codeText);
+
+      const editButton = document.createElement('button');
+      editButton.textContent = 'Editar';
+      editButton.addEventListener('click', () => this.showAddPlayer(i));
+      playerCardDiv.appendChild(editButton);
+
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Excluir';
+      deleteButton.addEventListener('click', () => Players.deletePlayer(i));
+      playerCardDiv.appendChild(deleteButton);
+
+      list.appendChild(playerCardDiv);
     });
+
+
     document.getElementById('startGameBtn').classList.toggle('hidden', Players.list.length < 2);
   },
 
   showCodes() {
     const codesDiv = document.getElementById('codesStatus');
-    codesDiv.innerHTML = '';
+    codesDiv.innerHTML = ''; 
+
     Players.list.forEach((p) => {
       if (p.active) {
-        let prog = p.progress.map(v => (v === null ? '_' : v)).join(' ');
-        codesDiv.innerHTML += `
-          <div class="code-card" style="background:${p.color}55">
-            <h3>${p.name}</h3>
-            <div class="code-display">${prog}</div>
-            <div class="score">Acertos: ${p.score} | Erros: ${p.errors}</div>
-          </div>
-        `;
+        const codeCardDiv = document.createElement('div');
+        codeCardDiv.classList.add('code-card');
+        codeCardDiv.style.background = `${p.color}55`; 
+
+        const h3 = document.createElement('h3');
+        h3.textContent = p.name;
+        codeCardDiv.appendChild(h3);
+
+        const codeDisplayDiv = document.createElement('div');
+        codeDisplayDiv.classList.add('code-display');
+        codeDisplayDiv.textContent = p.progress.map(v => (v === null ? '_' : v)).join(' ');
+        codeCardDiv.appendChild(codeDisplayDiv);
+
+        const scoreDiv = document.createElement('div');
+        scoreDiv.classList.add('score');
+        scoreDiv.textContent = `Acertos: ${p.score} | Erros: ${p.errors}`;
+        codeCardDiv.appendChild(scoreDiv);
+
+        codesDiv.appendChild(codeCardDiv);
       }
     });
   },
 
   showSidebarAttempts() {
     const attemptsContent = document.getElementById('attemptsContent');
-    attemptsContent.innerHTML = '';
+    attemptsContent.innerHTML = ''; 
+
     Players.list.forEach((p) => {
-      if (!p.active) return;
-      let pos = p.progress.indexOf(null);
-      if (pos === -1) return;
-      let line = `<div class="attempts-line"><strong>${p.name}:</strong> `;
+      if (!p.active) return; 
+
+      let pos = p.progress.indexOf(null); 
+      if (pos === -1) return; 
+
+      const attemptsLineDiv = document.createElement('div');
+      attemptsLineDiv.classList.add('attempts-line');
+
+      const strongName = document.createElement('strong');
+      strongName.textContent = `${p.name}: `;
+      attemptsLineDiv.appendChild(strongName);
+
+     
       p.attempts[pos].forEach(num => {
-        let className = '';
-        if (num === p.code[pos]) className = 'correct';
-        else if (num < p.code[pos]) className = 'lower';
-        else className = 'higher';
-        line += `<span class="attempt-number ${className}">${num}</span>`;
+        const attemptSpan = document.createElement('span');
+        attemptSpan.classList.add('attempt-number');
+        if (num === p.code[pos]) {
+          attemptSpan.classList.add('correct'); 
+        } else if (num < p.code[pos]) {
+          attemptSpan.classList.add('lower');
+        } else {
+          attemptSpan.classList.add('higher');
+        }
+        attemptSpan.textContent = num;
+        attemptsLineDiv.appendChild(attemptSpan);
       });
-      line += '</div>';
-      attemptsContent.innerHTML += line;
+      attemptsContent.appendChild(attemptsLineDiv);
     });
   }
 };
